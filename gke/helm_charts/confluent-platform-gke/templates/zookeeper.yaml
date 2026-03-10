@@ -1,0 +1,36 @@
+## ZooKeeper – 3 replicas on GKE with pd-ssd storage
+apiVersion: platform.confluent.io/v1beta1
+kind: Zookeeper
+metadata:
+  name: zookeeper
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 3
+
+  image:
+    application: confluentinc/cp-zookeeper:7.6.0
+    init: confluentinc/confluent-init-container:2.8.0
+
+  dataVolumeCapacity: 10Gi
+  logVolumeCapacity: 10Gi
+
+  storageClass:
+    name: confluent-ssd
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  ## Spread replicas across nodes for fault tolerance.
+  podTemplate:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: zookeeper

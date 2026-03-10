@@ -1,0 +1,32 @@
+## Kafka Connect – 2 replicas
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 2
+
+  image:
+    application: confluentinc/cp-server-connect:7.6.0
+    init: confluentinc/confluent-init-container:2.8.0
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka.{{ .Release.Namespace }}.svc.cluster.local:9071
+    schemaRegistry:
+      url: http://schemaregistry.{{ .Release.Namespace }}.svc.cluster.local:8081
+
+  configOverrides:
+    server:
+      - config.storage.replication.factor=3
+      - offset.storage.replication.factor=3
+      - status.storage.replication.factor=3

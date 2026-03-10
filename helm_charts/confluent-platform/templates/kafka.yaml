@@ -1,0 +1,46 @@
+## Kafka – 1 broker, minimal resources, no TLS, no auth (dev only)
+## CFK CR: platform.confluent.io/v1beta1 / Kafka
+apiVersion: platform.confluent.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+
+  image:
+    application: confluentinc/cp-server:7.8.0
+    init: confluentinc/confluent-init-container:3.1.0
+
+  dataVolumeCapacity: 5Gi
+
+  storageClass:
+    name: standard   # Minikube default StorageClass
+
+  podTemplate:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    envVars:
+      - name: KAFKA_HEAP_OPTS
+        value: "-Xms256m -Xmx512m"
+
+  ## Point at the single ZooKeeper deployed above.
+  dependencies:
+    zookeeper:
+      endpoint: zookeeper.{{ .Release.Namespace }}.svc.cluster.local:2181
+
+  ## Reduce default log retention to save disk space on a laptop.
+  configOverrides:
+    server:
+      - log.retention.hours=4
+      - log.segment.bytes=104857600
+      - offsets.topic.replication.factor=1
+      - transaction.state.log.replication.factor=1
+      - transaction.state.log.min.isr=1
+      - confluent.license.topic.replication.factor=1
+      - confluent.metadata.topic.replication.factor=1

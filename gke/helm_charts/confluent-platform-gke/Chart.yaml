@@ -1,0 +1,14 @@
+apiVersion: v2
+name: confluent-platform-gke
+description: >
+  Confluent for Kubernetes (CFK) deployment targeting Google Kubernetes Engine.
+  Uses pd-ssd storage, 3-replica Kafka and ZooKeeper, and production-appropriate
+  resource sizing.
+type: application
+version: 0.1.0
+appVersion: "7.8.0"
+
+dependencies:
+  - name: confluent-for-kubernetes
+    version: "0.921.3"
+    repository: "https://packages.confluent.io/helm"

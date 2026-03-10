@@ -1,0 +1,15 @@
+apiVersion: v2
+name: confluent-platform
+description: >
+  Lightweight Confluent for Kubernetes (CFK) deployment for local Minikube
+  development on macOS. Deploys the CFK operator plus a minimal Confluent
+  Platform topology: ZooKeeper, Kafka, Schema Registry, Kafka Connect, and
+  Control Center — all sized to run comfortably inside a MacBook Minikube node.
+type: application
+version: 0.1.0
+appVersion: "7.8.0"
+
+dependencies:
+  - name: confluent-for-kubernetes
+    version: "0.1351.24"   # CFK operator 3.1.0 – supports CP 7.3.x–8.1.x
+    repository: "https://packages.confluent.io/helm"

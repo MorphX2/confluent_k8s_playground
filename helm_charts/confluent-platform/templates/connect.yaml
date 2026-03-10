@@ -1,0 +1,36 @@
+## Kafka Connect – 1 replica, no connectors pre-loaded
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+
+  image:
+    application: confluentinc/cp-server-connect:7.8.0
+    init: confluentinc/confluent-init-container:3.1.0
+
+  podTemplate:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 192Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    envVars:
+      - name: KAFKA_HEAP_OPTS
+        value: "-Xms64m -Xmx128m"
+
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka.{{ .Release.Namespace }}.svc.cluster.local:9071
+    schemaRegistry:
+      url: http://schemaregistry.{{ .Release.Namespace }}.svc.cluster.local:8081
+
+  configOverrides:
+    server:
+      - config.storage.replication.factor=1
+      - offset.storage.replication.factor=1
+      - status.storage.replication.factor=1

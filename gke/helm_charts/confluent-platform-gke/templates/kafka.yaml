@@ -1,0 +1,58 @@
+## Kafka – 3 brokers on GKE with pd-ssd storage
+apiVersion: platform.confluent.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 3
+
+  image:
+    application: confluentinc/cp-server:7.6.0
+    init: confluentinc/confluent-init-container:2.8.0
+
+  dataVolumeCapacity: 50Gi
+
+  storageClass:
+    name: confluent-ssd
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+  dependencies:
+    zookeeper:
+      endpoint: zookeeper.{{ .Release.Namespace }}.svc.cluster.local:2181
+
+  ## Expose the broker inside the cluster via ClusterIP.
+  ## Change to LoadBalancer if external access is needed.
+  listeners:
+    internal:
+      exposure:
+        type: ClusterIP
+
+  ## Production-appropriate replication settings for 3 brokers.
+  configOverrides:
+    server:
+      - log.retention.hours=168
+      - offsets.topic.replication.factor=3
+      - transaction.state.log.replication.factor=3
+      - transaction.state.log.min.isr=2
+      - confluent.license.topic.replication.factor=3
+      - confluent.metadata.topic.replication.factor=3
+      - min.insync.replicas=2
+      - default.replication.factor=3
+      - num.partitions=6
+
+  podTemplate:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: kafka

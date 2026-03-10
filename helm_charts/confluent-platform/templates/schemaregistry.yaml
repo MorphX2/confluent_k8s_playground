@@ -1,0 +1,28 @@
+## Schema Registry – 1 replica
+apiVersion: platform.confluent.io/v1beta1
+kind: SchemaRegistry
+metadata:
+  name: schemaregistry
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+
+  image:
+    application: confluentinc/cp-schema-registry:7.8.0
+    init: confluentinc/confluent-init-container:3.1.0
+
+  podTemplate:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 192Mi
+      limits:
+        cpu: 500m
+        memory: 384Mi
+    envVars:
+      - name: SCHEMA_REGISTRY_HEAP_OPTS
+        value: "-Xms64m -Xmx128m"
+
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka.{{ .Release.Namespace }}.svc.cluster.local:9071

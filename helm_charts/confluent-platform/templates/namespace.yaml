@@ -1,0 +1,5 @@
+## Dedicated namespace for all Confluent Platform components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Release.Namespace }}

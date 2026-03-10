@@ -1,0 +1,50 @@
+## Control Center – 1 replica (stateful, active/standby not needed for Control Center)
+apiVersion: platform.confluent.io/v1beta1
+kind: ControlCenter
+metadata:
+  name: controlcenter
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+
+  image:
+    application: confluentinc/cp-enterprise-control-center:7.6.0
+    init: confluentinc/confluent-init-container:2.8.0
+
+  dataVolumeCapacity: 10Gi
+
+  storageClass:
+    name: confluent-ssd
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+  configOverrides:
+    server:
+      - confluent.controlcenter.internal.topics.replication=3
+      - confluent.controlcenter.command.topic.replication=3
+      - confluent.metrics.topic.replication=3
+      - confluent.monitoring.interceptor.topic.replication=3
+
+  ## Expose Control Center via a GCP Internal Load Balancer.
+  ## Change to "LoadBalancer" (without annotation) for an external IP.
+  externalAccess:
+    type: LoadBalancer
+    loadBalancer:
+      annotations:
+        cloud.google.com/load-balancer-type: "Internal"
+      domain: ""       # set to your domain if using DNS
+
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka.{{ .Release.Namespace }}.svc.cluster.local:9071
+    schemaRegistry:
+      url: http://schemaregistry.{{ .Release.Namespace }}.svc.cluster.local:8081
+    connect:
+      - name: connect
+        url: http://connect.{{ .Release.Namespace }}.svc.cluster.local:8083

@@ -1,0 +1,22 @@
+## values.yaml – CFK operator configuration for GKE
+
+confluent-for-kubernetes:
+  ## Run 2 operator replicas for high availability.
+  replicaCount: 2
+
+  image:
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  podDisruptionBudget:
+    enabled: true
+
+  metrics:
+    enabled: true

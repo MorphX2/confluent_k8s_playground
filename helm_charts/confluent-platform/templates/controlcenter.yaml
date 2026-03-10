@@ -1,0 +1,47 @@
+{{- if .Values.controlcenter.enabled }}
+## Control Center – opt-in (disabled by default to fit within Docker Desktop RAM).
+## Enable with: helm upgrade ... --set controlcenter.enabled=true
+apiVersion: platform.confluent.io/v1beta1
+kind: ControlCenter
+metadata:
+  name: controlcenter
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+
+  image:
+    application: confluentinc/cp-enterprise-control-center:7.8.0
+    init: confluentinc/confluent-init-container:3.1.0
+
+  dataVolumeCapacity: 2Gi
+
+  storageClass:
+    name: standard
+
+  podTemplate:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 768Mi
+
+  configOverrides:
+    server:
+      ## Heap sized to fit within the 768Mi pod limit.
+      - CONTROL_CENTER_HEAP_OPTS=-Xms256m -Xmx512m
+      - confluent.controlcenter.internal.topics.replication=1
+      - confluent.controlcenter.command.topic.replication=1
+      - confluent.metrics.topic.replication=1
+      - confluent.monitoring.interceptor.topic.replication=1
+
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafka.{{ .Release.Namespace }}.svc.cluster.local:9071
+    schemaRegistry:
+      url: http://schemaregistry.{{ .Release.Namespace }}.svc.cluster.local:8081
+    connect:
+      - name: connect
+        url: http://connect.{{ .Release.Namespace }}.svc.cluster.local:8083
+{{- end }}

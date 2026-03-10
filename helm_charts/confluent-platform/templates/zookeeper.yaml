@@ -1,0 +1,28 @@
+## ZooKeeper – 1 replica, minimal resources
+## CFK CR: confluent.platform.confluent.io/v1beta1 / Zookeeper
+apiVersion: platform.confluent.io/v1beta1
+kind: Zookeeper
+metadata:
+  name: zookeeper
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+
+  image:
+    application: confluentinc/cp-zookeeper:7.8.0
+    init: confluentinc/confluent-init-container:3.1.0
+
+  dataVolumeCapacity: 1Gi
+  logVolumeCapacity: 1Gi
+
+  storageClass:
+    name: standard   # Minikube default StorageClass
+
+  podTemplate:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 192Mi
+      limits:
+        cpu: 500m
+        memory: 300Mi

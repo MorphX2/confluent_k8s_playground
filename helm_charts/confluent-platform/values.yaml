@@ -1,0 +1,35 @@
+## values.yaml – Lightweight CFK operator tuning for Minikube / MacBook
+## The Confluent Platform components themselves are deployed as Kubernetes
+## custom resources (CRs) in templates/; this file only configures the
+## confluent-for-kubernetes operator sub-chart.
+
+confluent-for-kubernetes:
+  ## Run a single operator replica to save memory.
+  replicaCount: 1
+
+  ## Pull the operator image only when it is not already present locally.
+  image:
+    pullPolicy: IfNotPresent
+
+  ## Keep the operator lightweight – these limits are enough for a dev laptop.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  ## Disable pod disruption budget – not needed for local dev.
+  podDisruptionBudget:
+    enabled: false
+
+  ## Prometheus metrics are optional; disable to reduce footprint.
+  metrics:
+    enabled: false
+
+## Control Center is disabled by default to fit within Docker Desktop's ~3.9 GiB
+## RAM cap. Enable only if you have increased Docker Desktop memory to ≥ 6 GiB.
+##   ./deploy.sh --set controlcenter.enabled=true
+controlcenter:
+  enabled: false
