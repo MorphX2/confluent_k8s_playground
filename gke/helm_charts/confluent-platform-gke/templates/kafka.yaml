@@ -11,29 +11,14 @@ spec:
     application: confluentinc/cp-server:7.6.0
     init: confluentinc/confluent-init-container:2.8.0
 
-  dataVolumeCapacity: 50Gi
+  dataVolumeCapacity: 10Gi
 
   storageClass:
     name: confluent-ssd
 
-  resources:
-    requests:
-      cpu: 500m
-      memory: 2Gi
-    limits:
-      cpu: 2000m
-      memory: 4Gi
-
   dependencies:
     zookeeper:
       endpoint: zookeeper.{{ .Release.Namespace }}.svc.cluster.local:2181
-
-  ## Expose the broker inside the cluster via ClusterIP.
-  ## Change to LoadBalancer if external access is needed.
-  listeners:
-    internal:
-      exposure:
-        type: ClusterIP
 
   ## Production-appropriate replication settings for 3 brokers.
   configOverrides:
@@ -49,6 +34,13 @@ spec:
       - num.partitions=6
 
   podTemplate:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname

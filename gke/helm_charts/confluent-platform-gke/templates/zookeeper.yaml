@@ -17,16 +17,15 @@ spec:
   storageClass:
     name: confluent-ssd
 
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-
   ## Spread replicas across nodes for fault tolerance.
   podTemplate:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 250m
+        memory: 512Mi
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname

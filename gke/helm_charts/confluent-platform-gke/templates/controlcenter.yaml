@@ -16,13 +16,14 @@ spec:
   storageClass:
     name: confluent-ssd
 
-  resources:
-    requests:
-      cpu: 500m
-      memory: 2Gi
-    limits:
-      cpu: 2000m
-      memory: 4Gi
+  podTemplate:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
 
   configOverrides:
     server:
@@ -32,13 +33,13 @@ spec:
       - confluent.monitoring.interceptor.topic.replication=3
 
   ## Expose Control Center via a GCP Internal Load Balancer.
-  ## Change to "LoadBalancer" (without annotation) for an external IP.
+  ## Change to "loadBalancer" (without annotation) for an external IP.
   externalAccess:
-    type: LoadBalancer
+    type: loadBalancer
     loadBalancer:
       annotations:
         cloud.google.com/load-balancer-type: "Internal"
-      domain: ""       # set to your domain if using DNS
+      domain: "confluent.svc.cluster.local"
 
   dependencies:
     kafka:

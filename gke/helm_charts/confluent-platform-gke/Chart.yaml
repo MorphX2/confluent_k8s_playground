@@ -10,5 +10,5 @@ appVersion: "7.8.0"
 
 dependencies:
   - name: confluent-for-kubernetes
-    version: "0.921.3"
+    version: "0.1351.59"
     repository: "https://packages.confluent.io/helm"
