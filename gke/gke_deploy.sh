@@ -43,6 +43,7 @@ echo "▶ Installing / upgrading release '${RELEASE}' in namespace '${NAMESPACE}
 helm upgrade --install "${RELEASE}" "${CHART_DIR}" \
   --namespace "${NAMESPACE}" \
   --create-namespace \
+  --force-conflicts \
   --wait \
   --timeout 15m
 

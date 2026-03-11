@@ -1,5 +1,5 @@
-## StorageClass – GKE pd-ssd for all Confluent Platform components.
-## A single StorageClass is referenced by name in every component manifest.
+## StorageClass – GKE pd-standard for budget clusters (avoids SSD quota limits).
+## Switch type back to pd-ssd for production workloads.
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -7,8 +7,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/gce-pd
 parameters:
-  type: pd-ssd
-  replication-type: none        # zonal SSD; use "regional-pd" for multi-zone HA
+  type: pd-standard
+  replication-type: none        # zonal disk; use "regional-pd" for multi-zone HA
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true

@@ -1,2 +1,6 @@
 /kafka_data/*
 .DS_Store
+.env
+gcp-kube-svc.json
+# Chart.lock  # Removed: commit lock files for reproducible deployments
+**/charts/*.tgz
