@@ -4,3 +4,13 @@
 gcp-kube-svc.json
 # Chart.lock  # Removed: commit lock files for reproducible deployments
 **/charts/*.tgz
+.vscode/*
+**target**
+
+# Java / Maven build artifacts
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
