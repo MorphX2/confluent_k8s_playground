@@ -12,11 +12,12 @@ RELEASE="${RELEASE:-confluent-platform}"
 CHART_DIR="../helm_charts/confluent-platform"
 KIND_CONFIG_YAML="$(pwd)/3-node-kubernetes-cluster.yaml"
 ENABLE_CONTROL_CENTER="${ENABLE_CONTROL_CENTER:-false}"
+KIND_CLUSTER=$(kind get clusters 2>/dev/null)
 
 # ── 1. Ensure that the Kind cluster is running ────────────────────────────────────────────
-if [ ! kind get clusters 2>/dev/null | grep -q "confluent" &&  -f "${KIND_CONFIG_YAML}" ]; then
+if ! echo ${KIND_CLUSTER} | grep -q "confluent" && [ -f "${KIND_CONFIG_YAML}" ]; then
   echo "▶ Creating 3 Node Kind Cluster"
-  kind create cluster --config $KIND_CONFIG_YAML/3-node-kubernetes-cluster.yaml
+  kind create cluster --name confluent --config $KIND_CONFIG_YAML
   
 else
   echo "✔ Kind cluster already running."

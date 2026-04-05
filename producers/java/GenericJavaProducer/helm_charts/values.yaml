@@ -1,0 +1,26 @@
+replicaCount: 1
+
+image:
+  # After building, load into Kind with:
+  #   kind load docker-image generic-java-producer:latest --name confluent
+  repository: kafkajavaproducer
+  tag: "latest"
+  # Use Never so Kubernetes pulls from the Kind node image cache, not a registry
+  pullPolicy: Never
+
+kafka:
+  # In-cluster address of the Kafka service deployed by the confluent-platform chart
+  bootstrapServers: "kafka.confluent.svc.cluster.local:9092"
+  topic: "JavaConsumerTopic"
+
+serviceAccount:
+  create: true
+  name: ""
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
